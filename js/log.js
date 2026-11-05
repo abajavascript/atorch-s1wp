@@ -129,14 +129,13 @@ export function createLogger({ onFile, onRows, onError }) {
       return;
     }
     const now = date.getTime();
-    if (!bucketStarted) bucketStarted = now;
-    bucket.push({ sample: stamped, date });
-    if (now - bucketStarted >= intervalSeconds * 1000) {
+    if (bucket.length && now - bucketStarted >= intervalSeconds * 1000) {
       const entries = bucket;
       bucket = [];
-      bucketStarted = 0;
       enqueue(linePrefix() + formatAggregate(entries) + '\n').catch(() => {});
     }
+    if (!bucket.length) bucketStarted = now;
+    bucket.push({ sample: stamped, date });
   }
 
   async function flushPartial() {
