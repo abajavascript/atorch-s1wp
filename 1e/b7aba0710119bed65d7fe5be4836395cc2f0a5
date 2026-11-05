@@ -1,0 +1,24 @@
+README.md
+  s_dbd783389af360::t_88ab597b287082 4-22
+  s_dbd783389af360::t_d5b875ee05bd04 23
+.gitignore
+  s_dbd783389af360::t_31f28bc2f799b8 1-4
+js/log.js
+  s_dbd783389af360::t_f9dd37e88ea07f 132,137-138
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1eb7aba0710119bed65d7fe5be4836395cc2f0a5",
+  "prompts": {},
+  "sessions": {
+    "s_dbd783389af360": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d175109d-bce7-4a68-9db2-2f8e1f305626",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
