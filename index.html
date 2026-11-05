@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Atorch S1WP</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="page-header">
+  <h1>Atorch S1WP</h1>
+  <p class="muted">Watch real time data from energy monitor.</p>
+</header>
+
+<section class="panel" aria-label="Connection">
+  <div class="actions">
+    <button id="connect" type="button">Connect</button>
+    <button id="disconnect" type="button" disabled>Disconnect</button>
+  </div>
+  <p>Status: <strong id="status">Disconnected</strong> · Packets: <strong id="count">0</strong></p>
+  <p id="error" class="error" role="alert"></p>
+  <p id="connectionNote" class="note">Keep this tab in the foreground. On Android, turn Location on or the Bluetooth list can stay empty. iPhone and iPad cannot connect. A dropped link reconnects on its own; closing the page commits the last finished row and disconnects.</p>
+</section>
+
+<section class="panel" aria-label="Capacity">
+  <div class="actions">
+    <button id="zero" type="button" disabled>Zero accumulated</button>
+  </div>
+  <p class="note">After the battery is full, zero accumulated energy. Device energy keeps showing the meter total. Accumulated starts at 0 and is the energy since that moment.</p>
+  <div class="metrics">
+    <article class="metric">
+      <div class="name">Device energy</div>
+      <div class="value" id="metric-energy">—</div>
+    </article>
+    <article class="metric">
+      <div class="name">Baseline</div>
+      <div class="value" id="metric-baseline">—</div>
+    </article>
+    <article class="metric wide">
+      <div class="name">Accumulated</div>
+      <div class="value" id="metric-accumulated">—</div>
+    </article>
+  </div>
+</section>
+
+<section class="metrics" aria-label="Live readings">
+  <article class="metric">
+    <div class="name">Voltage</div>
+    <div class="value" id="metric-voltage">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Current</div>
+    <div class="value" id="metric-current">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Power</div>
+    <div class="value" id="metric-power">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Power factor</div>
+    <div class="value" id="metric-powerFactor">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Temperature</div>
+    <div class="value" id="metric-temperature">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Frequency</div>
+    <div class="value" id="metric-frequency">—</div>
+  </article>
+  <article class="metric">
+    <div class="name">Runtime</div>
+    <div class="value" id="metric-runtime">—</div>
+  </article>
+</section>
+
+<section class="panel" aria-label="Chart">
+  <div class="chips" id="chips">
+    <button type="button" data-series="power" aria-pressed="true">Power</button>
+    <button type="button" data-series="voltage" aria-pressed="false">Voltage</button>
+    <button type="button" data-series="current" aria-pressed="false">Current</button>
+    <button type="button" data-series="powerFactor" aria-pressed="false">Power factor</button>
+    <button type="button" data-series="temperature" aria-pressed="false">Temperature</button>
+  </div>
+  <canvas id="chart" width="640" height="280" aria-label="Selected reading over time"></canvas>
+</section>
+
+<section class="panel" aria-label="Log file">
+  <div class="actions">
+    <button id="startLog" type="button">Start logging</button>
+    <button id="stopLog" type="button" disabled>Stop logging</button>
+  </div>
+  <div class="log-options">
+    <label for="logMode">Store
+      <select id="logMode">
+        <option value="reading">Every reading</option>
+        <option value="interval">Every N seconds</option>
+      </select>
+    </label>
+    <label for="intervalSeconds">N
+      <input id="intervalSeconds" type="number" min="1" step="1" value="1" inputmode="numeric" disabled>
+    </label>
+  </div>
+  <p>File: <strong id="fileName">None</strong> · <strong id="logState">No file</strong> · Rows written: <strong id="rows">0</strong></p>
+  <p class="note">Start logging picks a file and records into it. An empty file starts a new log. If the file already has data, choose append or override. Stop logging ends the recording. Each finished row is saved before the next one. A reload forgets the chosen file and the accumulated baseline; start again and pick the same file to append.</p>
+</section>
+
+<details class="panel">
+  <summary>Packet details</summary>
+  <h2>Frame header</h2>
+  <pre id="header">Waiting for data…</pre>
+  <h2>Latest raw packet</h2>
+  <pre id="raw">Waiting for data…</pre>
+</details>
+
+<dialog id="fileChoice" aria-labelledby="fileChoiceText">
+  <p id="fileChoiceText"></p>
+  <div class="actions">
+    <button id="fileAppend" type="button">Append</button>
+    <button id="fileOverride" type="button">Override</button>
+    <button id="fileCancel" type="button" class="secondary">Cancel</button>
+  </div>
+</dialog>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
