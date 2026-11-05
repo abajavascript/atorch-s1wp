@@ -1,0 +1,60 @@
+js/log.js
+  s_8e16ed579369ea::t_b6ebb123a50885 51-53,61-73,75-76,79,83-93,95,97-99,105
+  s_8e16ed579369ea::t_ea5d7e8764bf61 184
+  s_dbd783389af360::t_507be28548bd3d 82
+  s_dbd783389af360::t_8166203e08ecde 1-50,54,56-60,74,77-78,80-81,94,106-183,185-204,223-254
+  s_dbd783389af360::t_8498ac5b9e6fa2 205-222
+  s_8e16ed579369ea::t_b8bb1e3611f2c1 96,100-104
+  s_dbd783389af360::t_a301e2ae47a1ef 55
+js/ble.js
+  s_dbd783389af360::t_67e2f0849aed78 67-71,74-82
+  s_dbd783389af360::t_678b52adcaf13a 1-66,72-73,83-171
+js/protocol.js
+  s_8e16ed579369ea::t_8f6bf1107fda70 17,33,39-40
+  s_dbd783389af360::t_65391e0f3a8443 1-16,18-32,34-38,41-67
+js/app.js
+  s_dbd783389af360::t_b5cfe72c21bed9 132
+  s_8e16ed579369ea::t_ad6ecd0a8e95ac 4,7-9
+  s_8e16ed579369ea::t_eed2e22f44e729 58
+  s_8e16ed579369ea::t_f1fe88e4ef9792 227-230
+  s_dbd783389af360::t_ca2f22940465e5 1-3,5-6,10-57,59-131,133-156,191,203-226,231
+  s_8e16ed579369ea::t_52f259f714627e 157-190,192-202
+css/app.css
+  s_dbd783389af360::t_24c495d07a925d 1-22,25-54,56-73,91-138
+  s_8e16ed579369ea::t_8ea59b3aba41f6 74-90
+  s_8e16ed579369ea::t_cebbbf3636baee 55
+  s_8e16ed579369ea::t_727a4fedd10ea2 23-24
+js/chart.js
+  s_dbd783389af360::t_959406c7c01cbd 1-152
+index.html
+  s_8e16ed579369ea::t_7e55afaf4c97d3 23
+  s_dbd783389af360::t_f25d81c15dbaf4 1-12,14-22,24-90,92-105,107-116,126-128
+  s_8e16ed579369ea::t_b51f37dcb1be24 106
+  s_8e16ed579369ea::t_0f9fb746128b24 117-125
+  s_8e16ed579369ea::t_5ac0ce6490063e 91
+  s_8e16ed579369ea::t_e367c0e5fd33e9 13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7889a6fed9030dc151089d714f110a71de06a48e",
+  "prompts": {},
+  "sessions": {
+    "s_8e16ed579369ea": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "8550ff9d-cafb-4c8c-ba36-72d075a150e0",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    },
+    "s_dbd783389af360": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "d175109d-bce7-4a68-9db2-2f8e1f305626",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
