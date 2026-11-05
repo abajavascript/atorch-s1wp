@@ -1,0 +1,37 @@
+index.html
+  s_cc11f2cfe56ec3::t_d51287313c19f4 23-24
+  s_cc11f2cfe56ec3::t_7dd0bfd341eda4 113-115
+css/app.css
+  s_cc11f2cfe56ec3::t_6bd115477b591a 91-111
+js/app.js
+  s_cc11f2cfe56ec3::t_b7321451549f84 34-36,41-44,50-63
+  s_cc11f2cfe56ec3::t_dfc864246615fe 4,7
+  s_cc11f2cfe56ec3::t_b1d5d55383e927 121
+  s_cc11f2cfe56ec3::t_469d4d228ea0c9 158
+  s_cc11f2cfe56ec3::t_5c174c5ba51e65 110
+js/ble.js
+  s_cc11f2cfe56ec3::t_7dccade694faa5 221
+  s_cc11f2cfe56ec3::t_27d8c12102e30c 3-13,17,23,28-31,37,45-47,49,52,55,58,60,70-71,85,87,89-105,107-129,140-143,146,149-150,154,157-158,160-161,192,217-220,222-229
+js/chart.js
+  s_cc11f2cfe56ec3::t_d40bf369e994a8 119-121,123
+  s_cc11f2cfe56ec3::t_721715b9f6008e 148-152
+  s_cc11f2cfe56ec3::t_a9ed31b52db32b 9-10
+  s_cc11f2cfe56ec3::t_2c8abfbb2530a6 23-26
+  s_cc11f2cfe56ec3::t_83bb5967e109be 147
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "221cf0c9133c3d071272adcf8a849bdd572953c3",
+  "prompts": {},
+  "sessions": {
+    "s_cc11f2cfe56ec3": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "e1686eb1-f986-4884-b9ca-03dc8d184c39",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
