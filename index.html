@@ -20,6 +20,8 @@
   </div>
   <p>Status: <strong id="status">Disconnected</strong> · Packets: <strong id="count">0</strong></p>
   <p id="error" class="error" role="alert"></p>
+  <h2>Link log</h2>
+  <ol id="linkLog" class="link-log" aria-live="polite"><li class="muted">No link events yet.</li></ol>
   <p id="connectionNote" class="note">Keep this tab in the foreground. On Android, turn Location on or the Bluetooth list can stay empty. iPhone and iPad cannot connect. A dropped link reconnects on its own; closing the page commits the last finished row and disconnects.</p>
 </section>
 
@@ -108,6 +110,9 @@
 
 <details class="panel">
   <summary>Packet details</summary>
+  <div class="actions">
+    <button id="demo" type="button" class="secondary">Decode sample packet</button>
+  </div>
   <h2>Frame header</h2>
   <pre id="header">Waiting for data…</pre>
   <h2>Latest raw packet</h2>

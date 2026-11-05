@@ -6,6 +6,8 @@ const SERIES = {
   temperature: { label: 'Temperature', unit: '°C', color: '#f87171', digits: 0 }
 };
 
+const GAP_SECONDS = 3;
+
 export function createChart(canvas) {
   const history = Object.fromEntries(Object.keys(SERIES).map((key) => [key, []]));
   let active = 'power';
@@ -18,7 +20,10 @@ export function createChart(canvas) {
     if (origin == null) origin = timeMs;
     const t = (timeMs - origin) / 1000;
     for (const key of Object.keys(SERIES)) {
-      history[key].push({ t, y: sample[key] });
+      const points = history[key];
+      const previous = points[points.length - 1];
+      const gap = Boolean(previous) && t - previous.t > GAP_SECONDS;
+      points.push({ t, y: sample[key], gap });
     }
     draw();
   }
@@ -111,8 +116,11 @@ export function createChart(canvas) {
     drawn.forEach((point, index) => {
       const x = pad.left + (point.t / maxT) * plotWidth;
       const y = pad.top + ((maxY - point.y) / (maxY - minY)) * plotHeight;
-      if (index === 0) context.moveTo(x, y);
+      const next = drawn[index + 1];
+      const isolated = (index === 0 || point.gap) && (!next || next.gap);
+      if (index === 0 || point.gap) context.moveTo(x, y);
       else context.lineTo(x, y);
+      if (isolated) context.lineTo(x + 0.01, y);
     });
     context.stroke();
 
@@ -136,7 +144,12 @@ function downsample(points, buckets) {
   for (let index = 0; index < buckets; index += 1) {
     const start = Math.floor(index * size);
     const end = Math.min(points.length, Math.floor((index + 1) * size));
-    sampled.push(points[Math.max(start, end - 1)]);
+    if (end <= start) continue;
+    let gapAt = -1;
+    for (let at = start; at < end; at += 1) if (points[at].gap) gapAt = at;
+    if (gapAt > start) sampled.push(points[gapAt - 1]);
+    if (gapAt >= start) sampled.push(points[gapAt]);
+    if (end - 1 > gapAt) sampled.push(points[end - 1]);
   }
   return sampled;
 }

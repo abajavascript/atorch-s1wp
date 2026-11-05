@@ -88,6 +88,27 @@ dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
 
 dialog .actions { margin-top: 14px; }
 
+.link-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.link-log li {
+  padding: 6px 0;
+  border-top: 1px solid #374151;
+  overflow-wrap: anywhere;
+}
+
+.link-log li:first-child { border-top: 0; }
+.link-log time { color: #9ca3af; font-variant-numeric: tabular-nums; margin-right: 6px; }
+.link-log .reconnecting { color: #fcd34d; }
+.link-log .connected { color: #86efac; }
+
+#status { overflow-wrap: anywhere; }
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

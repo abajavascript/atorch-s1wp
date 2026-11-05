@@ -1,10 +1,10 @@
 import { createBle } from './ble.js';
 import { createChart } from './chart.js';
 import { createLogger } from './log.js';
-import { decodeAtorch, formatHex } from './protocol.js';
+import { SAMPLE_HEX, bytesFromHex, decodeAtorch, formatHex, formatTimestamp } from './protocol.js';
 
 const elements = Object.fromEntries(
-  ['connect', 'disconnect', 'status', 'count', 'error', 'connectionNote', 'zero', 'fileName', 'rows',
+  ['connect', 'disconnect', 'status', 'count', 'error', 'linkLog', 'connectionNote', 'demo', 'zero', 'fileName', 'rows',
     'logMode', 'intervalSeconds', 'startLog', 'stopLog', 'logState', 'header', 'raw', 'chips', 'chart',
     'fileChoice', 'fileChoiceText', 'fileAppend', 'fileOverride', 'fileCancel']
     .map((id) => [id, document.getElementById(id)])
@@ -31,26 +31,36 @@ const logger = createLogger({
   }
 });
 
+const LINK_LOG_SIZE = 8;
+const linkEvents = [];
+
 const ble = createBle({
   onPacket: (bytes) => {
     showPacket(bytes);
   },
-  onStatus: (status) => {
-    elements.status.textContent = status;
-    if (status.startsWith('Connected')) setLinkState('connected');
-    else if (status === 'Reconnecting…' || status === 'Connecting…' || status === 'Selecting device…') {
-      setLinkState(status === 'Selecting device…' ? 'connecting' : status === 'Reconnecting…' ? 'reconnecting' : 'connecting');
-    } else if (status === 'Disconnected') setLinkState('disconnected');
-  },
-  onError: (error) => {
-    if (error?.name === 'AbortError') return;
-    elements.error.textContent = error.message || String(error);
+  onLink: ({ state, message }) => {
+    elements.status.textContent = message;
+    setLinkState(state);
+    if (state !== 'selecting' && state !== 'connecting') addLinkEvent(state, message);
   }
 });
 
 function setLinkState(state) {
   elements.connect.disabled = state !== 'disconnected';
-  elements.disconnect.disabled = state === 'disconnected';
+  elements.disconnect.disabled = state === 'disconnected' || state === 'selecting';
+}
+
+function addLinkEvent(state, message) {
+  linkEvents.unshift({ state, message, time: formatTimestamp(new Date()) });
+  linkEvents.length = Math.min(linkEvents.length, LINK_LOG_SIZE);
+  elements.linkLog.replaceChildren(...linkEvents.map((event) => {
+    const item = document.createElement('li');
+    item.className = event.state;
+    const time = document.createElement('time');
+    time.textContent = event.time;
+    item.append(time, event.message);
+    return item;
+  }));
 }
 
 function syncLogButtons() {
@@ -97,7 +107,7 @@ function formatWattHours(kwh) {
   return `${wattHours.toFixed(digits)} Wh`;
 }
 
-function showPacket(bytes) {
+function showPacket(bytes, { demo = false } = {}) {
   elements.raw.textContent = `${formatHex(bytes)}\n\nLength: ${bytes.length} bytes`;
   try {
     const decoded = decodeAtorch(bytes);
@@ -108,7 +118,7 @@ function showPacket(bytes) {
     elements.zero.disabled = false;
     render(decoded);
     chart.push(decoded, Date.now());
-    logger.onSample(decoded, new Date());
+    if (!demo) logger.onSample(decoded, new Date());
     elements.header.textContent = [
       `Header bytes [0..3]: ${formatHex(decoded.header)}`,
       `Prefix [0..1]: ${formatHex(decoded.header.slice(0, 2))}`,
@@ -145,6 +155,7 @@ async function guarded(action) {
 elements.connect.addEventListener('click', () => guarded(() => ble.connect()));
 elements.disconnect.addEventListener('click', () => guarded(() => ble.disconnect()));
 elements.zero.addEventListener('click', () => guarded(zeroAccumulated));
+elements.demo.addEventListener('click', () => showPacket(bytesFromHex(SAMPLE_HEX), { demo: true }));
 elements.logMode.addEventListener('change', () => guarded(async () => {
   await logger.flushPartial();
   logger.setMode(elements.logMode.value);
