@@ -1,0 +1,50 @@
+css/app.css
+  s_0e5fe6fef9eca8::t_276b8c1b19395a 50,140-151
+  s_0e5fe6fef9eca8::t_f3cb3151101694 33,41-49
+  s_0e5fe6fef9eca8::t_50c08aa6ecf3c5 40
+  s_0e5fe6fef9eca8::t_c3236a4094c41b 51
+js/log.js
+  s_56fed9f0845d7d::t_26ba238c822db0 215,218,221,225-228,230-232
+  s_56fed9f0845d7d::t_9131c6d46b2dd2 51,53-66,69-78,80-81
+js/app.js
+  s_0e5fe6fef9eca8::t_b47678bd650df0 204
+  s_56fed9f0845d7d::t_8d47a833b3634b 9-10
+  s_0e5fe6fef9eca8::t_fb04d0196fe24a 8
+  s_0e5fe6fef9eca8::t_35ed59c5ee2a0f 184,186
+  s_0e5fe6fef9eca8::t_d20ca722c436f4 19-24,27
+  s_0e5fe6fef9eca8::t_4027498199c136 276
+  s_56fed9f0845d7d::t_ff700bf648997b 241-268,274-275,277
+  s_0e5fe6fef9eca8::t_613029c2cb0282 311-312
+  s_0e5fe6fef9eca8::t_6a783596722504 117-152
+README.md
+  s_0e5fe6fef9eca8::t_e3203c439cc40e 23
+index.html
+  s_0e5fe6fef9eca8::t_72a5ce65e4275f 33,37,42,47
+  s_56fed9f0845d7d::t_9897f233e33dbe 111
+  s_56fed9f0845d7d::t_03394ac5c6f75c 125-133
+  s_0e5fe6fef9eca8::t_ccb6e643181fef 95,98,101-106
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2ff81992b4cf8669f5d71d3b3a4c02d5ecc8f0a4",
+  "prompts": {},
+  "sessions": {
+    "s_0e5fe6fef9eca8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "5b11db60-dcfa-4f8b-b7ff-c91e1c55340f",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    },
+    "s_56fed9f0845d7d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "a77b6ebb-09b1-431b-b7e9-11ffc3518ce1",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
