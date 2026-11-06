@@ -4,7 +4,7 @@ This page connects to an Atorch S1WP energy meter over Bluetooth Low Energy and 
 
 ## Open the page
 
-The hosted page is [https://abajavascript.github.io/atorch-s1wp/](https://abajavascript.github.io/atorch-s1wp/).
+The hosted page is [https://abajavascript.github.io/atorch-s1wp/](https://abajavascript.github.io/atorch-s1wp/). What the app must do is in [doc/prd.md](doc/prd.md). Why it is built this way is in [doc/adr.md](doc/adr.md).
 
 Chrome or Edge on a computer, and Chrome on Android, can connect. iPhone and iPad cannot. Open the site over HTTPS or from localhost. A file opened from disk cannot use Bluetooth or save to a chosen file.
 
