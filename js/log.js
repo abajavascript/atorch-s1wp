@@ -48,29 +48,37 @@ export function createLogger({ onFile, onRows, onError }) {
     return baseline;
   }
 
-  async function openForLogging(decide) {
+  async function openForLogging(kind, decide) {
     if (logging) return false;
-    // The open picker keeps existing bytes. The save picker would erase them first.
-    assertPicker(window.showOpenFilePicker, 'showOpenFilePicker');
-    const [next] = await pickFile('open');
-    const permission = await next.requestPermission({ mode: 'readwrite' });
-    if (permission !== 'granted') {
-      throw new Error('Write permission was not granted for that file.');
-    }
-    const text = await (await next.getFile()).text();
-    if (text.length === 0) {
-      await replace(next);
-    } else {
-      const canAppend = text.startsWith(HEADER);
-      const action = await decide({ name: next.name, canAppend });
-      if (action === 'append') {
-        if (!canAppend) throw new Error('That file does not start with the S1WP log header.');
-        await adopt(next, { leadingNewline: !text.endsWith('\n') });
-      } else if (action === 'override') {
+    if (kind === 'new') {
+      // The save picker creates a missing name. It also clears an existing file before returning.
+      assertPicker(window.showSaveFilePicker, 'showSaveFilePicker');
+      await replace(await pickFile('save'));
+    } else if (kind === 'existing') {
+      // The open picker keeps existing bytes so append can still read them.
+      assertPicker(window.showOpenFilePicker, 'showOpenFilePicker');
+      const next = await pickFile('open');
+      const permission = await next.requestPermission({ mode: 'readwrite' });
+      if (permission !== 'granted') {
+        throw new Error('Write permission was not granted for that file.');
+      }
+      const text = await (await next.getFile()).text();
+      if (text.length === 0) {
         await replace(next);
       } else {
-        return false;
+        const canAppend = text.startsWith(HEADER);
+        const action = await decide({ name: next.name, canAppend });
+        if (action === 'append') {
+          if (!canAppend) throw new Error('That file does not start with the S1WP log header.');
+          await adopt(next, { leadingNewline: !text.endsWith('\n') });
+        } else if (action === 'override') {
+          await replace(next);
+        } else {
+          return false;
+        }
       }
+    } else {
+      return false;
     }
     start();
     return true;
@@ -204,19 +212,24 @@ function assertPicker(fn, name) {
 async function pickFile(kind) {
   const open = kind === 'save' ? window.showSaveFilePicker : window.showOpenFilePicker;
   try {
-    return await open(pickerOptions(kind, PICKER_TYPES));
+    return oneFile(kind, await open(pickerOptions(kind, PICKER_TYPES)));
   } catch (error) {
     if (error?.name === 'AbortError' || !(error instanceof TypeError)) throw error;
-    return open(pickerOptions(kind, [{
+    return oneFile(kind, await open(pickerOptions(kind, [{
       description: 'Tab-separated values',
       accept: { 'text/plain': ['.tsv'] }
-    }]));
+    }])));
   }
 }
 
+function oneFile(kind, chosen) {
+  return kind === 'save' ? chosen : chosen[0];
+}
+
 function pickerOptions(kind, types) {
-  if (kind === 'save') return { suggestedName: 'atorch-s1wp.tsv', types };
-  return { multiple: false, types };
+  const shared = { id: 's1wp-log', types };
+  if (kind === 'save') return { ...shared, suggestedName: 'atorch-s1wp.tsv' };
+  return { ...shared, multiple: false };
 }
 
 function countDataLines(text) {

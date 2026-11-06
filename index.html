@@ -30,18 +30,21 @@
     <button id="zero" type="button" disabled>Zero accumulated</button>
   </div>
   <p class="note">After the battery is full, zero accumulated energy. Device energy keeps showing the meter total. Accumulated starts at 0 and is the energy since that moment.</p>
-  <div class="metrics">
+  <div class="metrics capacity">
     <article class="metric">
       <div class="name">Device energy</div>
       <div class="value" id="metric-energy">—</div>
+      <div class="detail" id="metric-energy-time">—</div>
     </article>
     <article class="metric">
       <div class="name">Baseline</div>
       <div class="value" id="metric-baseline">—</div>
+      <div class="detail" id="metric-baseline-time">—</div>
     </article>
     <article class="metric wide">
       <div class="name">Accumulated</div>
       <div class="value" id="metric-accumulated">—</div>
+      <div class="detail" id="metric-accumulated-time">—</div>
     </article>
   </div>
 </section>
@@ -89,23 +92,23 @@
 </section>
 
 <section class="panel" aria-label="Log file">
-  <div class="actions">
+  <div class="actions log-bar">
     <button id="startLog" type="button">Start logging</button>
     <button id="stopLog" type="button" disabled>Stop logging</button>
-  </div>
-  <div class="log-options">
-    <label for="logMode">Store
+    <label class="store" for="logMode">Store
       <select id="logMode">
         <option value="reading">Every reading</option>
-        <option value="interval">Every N seconds</option>
+        <option value="5">Every 5 sec</option>
+        <option value="10">Every 10 sec</option>
+        <option value="30">Every 30 sec</option>
+        <option value="60">Every 1 min</option>
+        <option value="300">Every 5 min</option>
+        <option value="600">Every 10 min</option>
       </select>
-    </label>
-    <label for="intervalSeconds">N
-      <input id="intervalSeconds" type="number" min="1" step="1" value="1" inputmode="numeric" disabled>
     </label>
   </div>
   <p>File: <strong id="fileName">None</strong> · <strong id="logState">No file</strong> · Rows written: <strong id="rows">0</strong></p>
-  <p class="note">Start logging picks a file and records into it. An empty file starts a new log. If the file already has data, choose append or override. Stop logging ends the recording. Each finished row is saved before the next one. A reload forgets the chosen file and the accumulated baseline; start again and pick the same file to append.</p>
+  <p class="note">Start logging records into a file. New file creates one when you enter a name. Existing file keeps its contents: an empty file starts a new log, and a file that already has data asks you to append or override. Stop logging ends the recording. Each finished row is saved before the next one. A reload forgets the chosen file and the accumulated baseline; start again and pick the same file to append.</p>
 </section>
 
 <details class="panel">
@@ -118,6 +121,15 @@
   <h2>Latest raw packet</h2>
   <pre id="raw">Waiting for data…</pre>
 </details>
+
+<dialog id="logKind" aria-labelledby="logKindText">
+  <p id="logKindText">New file creates a log when you enter a name. Existing file can be appended or overridden.</p>
+  <div class="actions">
+    <button id="logKindNew" type="button">New file</button>
+    <button id="logKindExisting" type="button">Existing file</button>
+    <button id="logKindCancel" type="button" class="secondary">Cancel</button>
+  </div>
+</dialog>
 
 <dialog id="fileChoice" aria-labelledby="fileChoiceText">
   <p id="fileChoiceText"></p>

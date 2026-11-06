@@ -30,11 +30,23 @@ h2 { font-size: 1rem; margin: 16px 0 8px; }
   margin: 14px 0;
 }
 
-.actions, .log-options, .chips {
+.actions, .chips {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   align-items: center;
+}
+
+.log-bar > button { white-space: nowrap; }
+.log-bar .store {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.log-bar select {
+  margin-left: 0;
+  min-width: 9.5rem;
 }
 
 button, select, input {
@@ -68,10 +80,6 @@ select, input {
   background: #111827;
   color: inherit;
 }
-
-input[type="number"] { width: 5.2rem; }
-
-.log-options { margin-top: 14px; }
 
 dialog {
   border: 0;
@@ -128,6 +136,18 @@ dialog .actions { margin-top: 14px; }
   font-variant-numeric: tabular-nums;
   margin-top: 4px;
   overflow-wrap: anywhere;
+}
+.metrics.capacity .metric { padding: 8px 14px; }
+.metric .detail {
+  margin-top: 1px;
+  color: #9ca3af;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  min-height: 1.15em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .metric.wide { grid-column: 1 / -1; }

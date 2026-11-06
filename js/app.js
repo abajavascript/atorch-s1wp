@@ -5,8 +5,9 @@ import { SAMPLE_HEX, bytesFromHex, decodeAtorch, formatHex, formatTimestamp } fr
 
 const elements = Object.fromEntries(
   ['connect', 'disconnect', 'status', 'count', 'error', 'linkLog', 'connectionNote', 'demo', 'zero', 'fileName', 'rows',
-    'logMode', 'intervalSeconds', 'startLog', 'stopLog', 'logState', 'header', 'raw', 'chips', 'chart',
-    'fileChoice', 'fileChoiceText', 'fileAppend', 'fileOverride', 'fileCancel']
+    'logMode', 'startLog', 'stopLog', 'logState', 'header', 'raw', 'chips', 'chart',
+    'fileChoice', 'fileChoiceText', 'fileAppend', 'fileOverride', 'fileCancel',
+    'logKind', 'logKindNew', 'logKindExisting', 'logKindCancel']
     .map((id) => [id, document.getElementById(id)])
 );
 
@@ -15,8 +16,15 @@ const valueElements = Object.fromEntries(
     .map((id) => [id, document.getElementById(`metric-${id}`)])
 );
 
+const capacityTimes = {
+  energy: document.getElementById('metric-energy-time'),
+  baseline: document.getElementById('metric-baseline-time'),
+  accumulated: document.getElementById('metric-accumulated-time')
+};
+
 let packetCount = 0;
 let latest = null;
+let baselineAt = null;
 
 const chart = createChart(elements.chart);
 const logger = createLogger({
@@ -68,7 +76,6 @@ function syncLogButtons() {
   elements.startLog.disabled = logging;
   elements.stopLog.disabled = !logging;
   elements.logState.textContent = logging ? 'Logging' : logger.hasFile() ? 'Ready' : 'No file';
-  elements.intervalSeconds.disabled = elements.logMode.value !== 'interval';
 }
 
 function showError(error) {
@@ -107,6 +114,42 @@ function formatWattHours(kwh) {
   return `${wattHours.toFixed(digits)} Wh`;
 }
 
+function formatClock(date) {
+  const pad = (value) => String(value).padStart(2, '0');
+  return `${pad(date.getDate())}.${pad(date.getMonth() + 1)}.${date.getFullYear()} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+function formatDuration(ms) {
+  const total = Math.max(0, Math.floor(ms / 1000));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
+  const seconds = total % 60;
+  const pad = (value) => String(value).padStart(2, '0');
+  return `${String(hours).padStart(3, '0')}:${pad(minutes)}:${pad(seconds)}`;
+}
+
+function renderCapacityClock() {
+  const now = new Date();
+  capacityTimes.energy.textContent = formatClock(now);
+  if (baselineAt == null) {
+    capacityTimes.baseline.textContent = '—';
+    capacityTimes.accumulated.textContent = '—';
+    return;
+  }
+  capacityTimes.baseline.textContent = formatClock(baselineAt);
+  capacityTimes.accumulated.textContent = formatDuration(now - baselineAt);
+}
+
+function applyLogStore() {
+  const seconds = Number(elements.logMode.value);
+  if (!Number.isInteger(seconds) || seconds < 1) {
+    logger.setMode('reading');
+    return;
+  }
+  logger.setMode('interval');
+  logger.setIntervalSeconds(seconds);
+}
+
 function showPacket(bytes, { demo = false } = {}) {
   elements.raw.textContent = `${formatHex(bytes)}\n\nLength: ${bytes.length} bytes`;
   try {
@@ -138,9 +181,9 @@ async function zeroAccumulated() {
   }
   await logger.flushPartial();
   logger.setBaseline(latest.energy);
-  chart.clear();
-  chart.push(latest, Date.now());
+  baselineAt = new Date();
   render(latest);
+  renderCapacityClock();
 }
 
 async function guarded(action) {
@@ -158,13 +201,9 @@ elements.zero.addEventListener('click', () => guarded(zeroAccumulated));
 elements.demo.addEventListener('click', () => showPacket(bytesFromHex(SAMPLE_HEX), { demo: true }));
 elements.logMode.addEventListener('change', () => guarded(async () => {
   await logger.flushPartial();
-  logger.setMode(elements.logMode.value);
+  applyLogStore();
   syncLogButtons();
 }));
-elements.intervalSeconds.addEventListener('change', () => {
-  logger.setIntervalSeconds(elements.intervalSeconds.value);
-  elements.intervalSeconds.value = String(Math.max(1, Math.floor(Number(elements.intervalSeconds.value)) || 1));
-});
 let startingLog = false;
 
 function askFileChoice({ name, canAppend }) {
@@ -199,14 +238,43 @@ function askFileChoice({ name, canAppend }) {
   });
 }
 
+function askLogKind() {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      if (elements.logKind.open) elements.logKind.close();
+      resolve(value);
+    };
+    const onNew = () => finish('new');
+    const onExisting = () => finish('existing');
+    const onCancel = () => finish(null);
+    const onClose = () => finish(null);
+    function cleanup() {
+      elements.logKindNew.removeEventListener('click', onNew);
+      elements.logKindExisting.removeEventListener('click', onExisting);
+      elements.logKindCancel.removeEventListener('click', onCancel);
+      elements.logKind.removeEventListener('close', onClose);
+    }
+    elements.logKindNew.addEventListener('click', onNew);
+    elements.logKindExisting.addEventListener('click', onExisting);
+    elements.logKindCancel.addEventListener('click', onCancel);
+    elements.logKind.addEventListener('close', onClose);
+    elements.logKind.showModal();
+  });
+}
+
 elements.startLog.addEventListener('click', () => guarded(async () => {
   if (startingLog || logger.isLogging()) return;
   startingLog = true;
   elements.startLog.disabled = true;
   try {
-    logger.setMode(elements.logMode.value);
-    logger.setIntervalSeconds(elements.intervalSeconds.value);
-    await logger.openForLogging(askFileChoice);
+    const kind = await askLogKind();
+    if (!kind) return;
+    applyLogStore();
+    await logger.openForLogging(kind, askFileChoice);
   } finally {
     startingLog = false;
     syncLogButtons();
@@ -240,3 +308,5 @@ setTimeout(() => {
 }, 10000);
 
 syncLogButtons();
+renderCapacityClock();
+setInterval(renderCapacityClock, 1000);
