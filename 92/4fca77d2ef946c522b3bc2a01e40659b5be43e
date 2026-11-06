@@ -1,0 +1,38 @@
+js/app.js
+  s_8ac9310d72182d::t_52f5a4db20b3d8 290-292
+  s_8ac9310d72182d::t_314bbd24837bda 29
+css/app.css
+  s_8ac9310d72182d::t_ff1ebc4b3baadb 70-75
+  s_8ac9310d72182d::t_9697870a59f99a 166,169-175,178-191
+  s_8ac9310d72182d::t_b0b396ebea45ca 199
+index.html
+  s_8ac9310d72182d::t_49d1feaa819333 8
+  s_8ac9310d72182d::t_6683f3dd6a74b8 87-88,92-94
+README.md
+  s_8ac9310d72182d::t_7d026a26d99079 21
+js/chart.js
+  s_8ac9310d72182d::t_2738675b8245c2 250
+  s_8ac9310d72182d::t_53794cc72bfe05 262,264,266-267,269,276
+  s_8ac9310d72182d::t_42c5332efd7db4 78,164,166,183
+  s_8ac9310d72182d::t_5212c1386f1c0f 151
+  s_8ac9310d72182d::t_938f9f90c84753 1-2,12-27,29-38,40-44,46-47,50-51,54-55,58-77,79-80,82-85,88-89,91-103,105-111,113-126,128-140,142-144,146-150,152-163,165,167-182,184-203,205-249,251-259,261,263,265,268,270-273,275,277,279-286,289-297,309-327
+  s_8ac9310d72182d::t_95ac7d2da27716 90
+.gitignore
+  s_8ac9310d72182d::t_1fbd06d26c4a23 5
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "924fca77d2ef946c522b3bc2a01e40659b5be43e",
+  "prompts": {},
+  "sessions": {
+    "s_8ac9310d72182d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cd6c064c-f4b7-459a-8cca-5d6801f27932",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
