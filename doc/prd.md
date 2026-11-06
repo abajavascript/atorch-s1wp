@@ -16,7 +16,7 @@ One person, at the meter, with Chrome or Edge on a computer, or Chrome on Androi
 - Show when the baseline was set, how long the accumulation has been running, and the current time next to device energy.
 - Plot power, voltage, and current together. Power factor and temperature can be turned on. Energy is not plotted.
 - Keep the chart when accumulated energy is zeroed.
-- Write readings to a tab-separated file the user chooses in the browser.
+- Write readings to a file the user chooses in the browser. Tab-separated is the default. A name ending in `.jsonl` is JSON lines. Any other name, including All files, is tab-separated.
 
 ## Out of scope
 
@@ -32,7 +32,7 @@ One person, at the meter, with Chrome or Edge on a computer, or Chrome on Androi
 2. **Zero accumulated** is available only after a reading. It sets the baseline to the current device energy and records that moment. Accumulated energy is device energy minus the baseline, shown in kWh and Wh. The baseline line shows the local time it was set (`DD.MM.YYYY HH:MM:SS`). The accumulated line shows elapsed time as `hhh:mm:ss`. Device energy keeps the meter total and shows the current local time, updated every second.
 3. Zeroing does not clear or restart the chart. Later readings continue the same lines.
 4. The chart starts with power, voltage, and current visible, each on its own scale. The user can show or hide power factor and temperature. A gap longer than 3 seconds breaks the line. Hovering a point shows the value, the elapsed time, and the clock time.
-5. **Start logging** asks for a new file or an existing one. A new file gets a header. An empty existing file starts a new log. A file that already has this log’s header can be appended or overridden. Any other non-empty file can only be overridden or cancelled.
+5. **Start logging** asks for a new file or an existing one. The file dialog lists tab-separated values first and JSON lines second, and still offers All files. A name ending in `.jsonl` is a JSONL log. Every other name is tab-separated. A new file gets that format’s header. An empty existing file starts a new log in the format its name selects. A file that already has this log’s header for that format can be appended or overridden. Any other non-empty file can only be overridden or cancelled.
 6. The store list is every reading, or one averaged row every 5 seconds, 10 seconds, 30 seconds, 1 minute, 5 minutes, or 10 minutes. Averaged rows use the mean of voltage, current, power, power factor, and temperature, and the last sample’s energy, baseline, frequency, and runtime.
 7. Each finished row is written before the next one starts. Stopping the log, changing the store interval, zeroing, or leaving the page writes a partial interval if one is open.
 8. A dropped link reconnects on its own and keeps using the same file. Disconnect stops reconnecting. Closing the page disconnects and writes the last finished row.
@@ -40,10 +40,12 @@ One person, at the meter, with Chrome or Edge on a computer, or Chrome on Androi
 
 ## Log columns
 
-`timestamp`, `voltage_v`, `current_a`, `power_w`, `energy_kwh`, `baseline_kwh`, `accumulated_kwh`, `power_factor`, `temperature_c`, `frequency_hz`, `runtime`.
+Both formats carry the same fields: `timestamp`, `voltage_v`, `current_a`, `power_w`, `energy_kwh`, `baseline_kwh`, `accumulated_kwh`, `power_factor`, `temperature_c`, `frequency_hz`, `runtime`.
 
-Timestamps look like `2026-11-05 19:30:43 +02:00`. Before a baseline exists, the baseline and accumulated columns are empty.
+Timestamps look like `2026-11-05 19:30:43 +02:00`. Before a baseline exists, the baseline and accumulated values are empty in a tab-separated file and `null` in JSONL.
+
+A tab-separated file has one header line and one row per record. A JSONL file starts with `{"log":"s1wp","version":1}`. Each later line is one JSON object. Numbers use the same precision as the tab-separated columns.
 
 ## Done when
 
-A full discharge can be watched live, the accumulated energy matches the meter total minus the value at zero, and the TSV contains the readings from that run.
+A full discharge can be watched live, the accumulated energy matches the meter total minus the value at zero, and the log file contains the readings from that run.

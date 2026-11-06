@@ -22,7 +22,7 @@ The chart is a separate record of power, voltage, current, power factor, and tem
 
 ## 4. The log stays in a file the user picks
 
-Readings are written with the File System Access API to a tab-separated file. There is no download-at-the-end step, so a closed tab still leaves the rows that were already committed. The interval modes average a bucket and append one row. A partial bucket is written when logging stops, the interval changes, the baseline is set, or the page hides.
+Readings are written with the File System Access API. The file dialog lists tab-separated values first and JSON lines second, and still offers All files. The chosen name decides the format: a name ending in `.jsonl` is JSON lines, and every other name is tab-separated. The picker does not report which filter was selected, so the extension is the signal. There is no download-at-the-end step, so a closed tab still leaves the rows that were already committed. The interval modes average a bucket and append one row. A partial bucket is written when logging stops, the interval changes, the baseline is set, or the page hides.
 
 The file handle cannot be restored after a reload. The user picks the same file again and appends.
 

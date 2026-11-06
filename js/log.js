@@ -14,13 +14,34 @@ export const HEADER = [
   'runtime'
 ].join('\t');
 
-const PICKER_TYPES = [{
-  description: 'Tab-separated values',
-  accept: { 'text/tab-separated-values': ['.tsv'] }
-}];
+const JSONL_HEADER = JSON.stringify({ log: 's1wp', version: 1 });
+
+// First type is the dialog default. All files stays available; a name that does not end in .jsonl is TSV.
+const PICKER_TYPES = [
+  {
+    description: 'Tab-separated values',
+    accept: { 'text/tab-separated-values': ['.tsv'] }
+  },
+  {
+    description: 'JSON lines',
+    accept: { 'application/x-ndjson': ['.jsonl'] }
+  }
+];
+
+const PICKER_TYPES_PLAIN = [
+  {
+    description: 'Tab-separated values',
+    accept: { 'text/plain': ['.tsv'] }
+  },
+  {
+    description: 'JSON lines',
+    accept: { 'text/plain': ['.jsonl'] }
+  }
+];
 
 export function createLogger({ onFile, onRows, onError }) {
   let handle = null;
+  let format = 'tsv';
   let logging = false;
   let mode = 'reading';
   let intervalSeconds = 1;
@@ -66,10 +87,15 @@ export function createLogger({ onFile, onRows, onError }) {
       if (text.length === 0) {
         await replace(next);
       } else {
-        const canAppend = text.startsWith(HEADER);
+        const nextFormat = formatForName(next.name);
+        const canAppend = nextFormat === 'jsonl' ? isJsonlLog(text) : text.startsWith(HEADER);
         const action = await decide({ name: next.name, canAppend });
         if (action === 'append') {
-          if (!canAppend) throw new Error('That file does not start with the S1WP log header.');
+          if (!canAppend) {
+            throw new Error(nextFormat === 'jsonl'
+              ? 'That file does not start with the S1WP JSONL header.'
+              : 'That file does not start with the S1WP log header.');
+          }
           await adopt(next, { leadingNewline: !text.endsWith('\n') });
         } else if (action === 'override') {
           await replace(next);
@@ -87,6 +113,7 @@ export function createLogger({ onFile, onRows, onError }) {
   async function adopt(next, { leadingNewline = false }) {
     await queue;
     handle = next;
+    format = formatForName(next.name);
     needsLeadingNewline = leadingNewline;
     rowsWritten = 0;
     onRows?.(0);
@@ -96,6 +123,7 @@ export function createLogger({ onFile, onRows, onError }) {
   async function replace(next) {
     await queue;
     handle = next;
+    format = formatForName(next.name);
     needsLeadingNewline = false;
     rowsWritten = 0;
     onRows?.(0);
@@ -103,7 +131,7 @@ export function createLogger({ onFile, onRows, onError }) {
     const writable = await next.createWritable();
     let committed = false;
     try {
-      await writable.write(`${HEADER}\n`);
+      await writable.write(`${format === 'jsonl' ? JSONL_HEADER : HEADER}\n`);
       await writable.close();
       committed = true;
     } finally {
@@ -133,14 +161,14 @@ export function createLogger({ onFile, onRows, onError }) {
       accumulated: baseline == null ? null : sample.energy - baseline
     };
     if (mode === 'reading') {
-      enqueue(linePrefix() + formatRow(stamped, date) + '\n').catch(() => {});
+      enqueue(linePrefix() + formatRow(stamped, date, format) + '\n').catch(() => {});
       return;
     }
     const now = date.getTime();
     if (bucket.length && now - bucketStarted >= intervalSeconds * 1000) {
       const entries = bucket;
       bucket = [];
-      enqueue(linePrefix() + formatAggregate(entries) + '\n').catch(() => {});
+      enqueue(linePrefix() + formatAggregate(entries, format) + '\n').catch(() => {});
     }
     if (!bucket.length) bucketStarted = now;
     bucket.push({ sample: stamped, date });
@@ -156,7 +184,7 @@ export function createLogger({ onFile, onRows, onError }) {
     const entries = bucket;
     bucket = [];
     bucketStarted = 0;
-    await enqueue(linePrefix() + formatAggregate(entries) + '\n');
+    await enqueue(linePrefix() + formatAggregate(entries, format) + '\n');
   }
 
   function linePrefix() {
@@ -215,10 +243,7 @@ async function pickFile(kind) {
     return oneFile(kind, await open(pickerOptions(kind, PICKER_TYPES)));
   } catch (error) {
     if (error?.name === 'AbortError' || !(error instanceof TypeError)) throw error;
-    return oneFile(kind, await open(pickerOptions(kind, [{
-      description: 'Tab-separated values',
-      accept: { 'text/plain': ['.tsv'] }
-    }])));
+    return oneFile(kind, await open(pickerOptions(kind, PICKER_TYPES_PLAIN)));
   }
 }
 
@@ -232,11 +257,27 @@ function pickerOptions(kind, types) {
   return { ...shared, multiple: false };
 }
 
-function countDataLines(text) {
-  return text.split('\n').filter((line) => line && !line.startsWith('timestamp\t')).length;
+function formatForName(name) {
+  return String(name).toLowerCase().endsWith('.jsonl') ? 'jsonl' : 'tsv';
 }
 
-function formatRow(sample, date) {
+function isJsonlLog(text) {
+  const end = text.indexOf('\n');
+  const first = (end < 0 ? text : text.slice(0, end)).trim();
+  try {
+    const parsed = JSON.parse(first);
+    return parsed?.log === 's1wp' && parsed?.version === 1;
+  } catch {
+    return false;
+  }
+}
+
+function countDataLines(text) {
+  return text.split('\n').filter((line) => line && line !== JSONL_HEADER && !line.startsWith('timestamp\t')).length;
+}
+
+function formatRow(sample, date, format) {
+  if (format === 'jsonl') return formatJsonlRow(sample, date);
   return [
     formatTimestamp(date),
     sample.voltage.toFixed(1),
@@ -252,7 +293,27 @@ function formatRow(sample, date) {
   ].join('\t');
 }
 
-function formatAggregate(entries) {
+function formatJsonlRow(sample, date) {
+  return JSON.stringify({
+    timestamp: formatTimestamp(date),
+    voltage_v: round(sample.voltage, 1),
+    current_a: round(sample.current, 3),
+    power_w: round(sample.power, 1),
+    energy_kwh: round(sample.energy, 2),
+    baseline_kwh: sample.baseline == null ? null : round(Number(sample.baseline), 2),
+    accumulated_kwh: sample.accumulated == null ? null : round(Number(sample.accumulated), 2),
+    power_factor: round(sample.powerFactor, 3),
+    temperature_c: round(sample.temperature, 0),
+    frequency_hz: round(sample.frequency, 1),
+    runtime: sample.runtime
+  });
+}
+
+function round(value, digits) {
+  return Number(value.toFixed(digits));
+}
+
+function formatAggregate(entries, format) {
   const last = entries[entries.length - 1];
   const average = (key) => entries.reduce((sum, entry) => sum + entry.sample[key], 0) / entries.length;
   return formatRow({
@@ -262,5 +323,5 @@ function formatAggregate(entries) {
     power: average('power'),
     powerFactor: average('powerFactor'),
     temperature: average('temperature')
-  }, last.date);
+  }, last.date, format);
 }

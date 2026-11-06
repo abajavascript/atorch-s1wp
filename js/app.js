@@ -207,9 +207,10 @@ elements.logMode.addEventListener('change', () => guarded(async () => {
 let startingLog = false;
 
 function askFileChoice({ name, canAppend }) {
+  const label = name.toLowerCase().endsWith('.jsonl') ? 'S1WP JSONL log' : 'S1WP log';
   elements.fileChoiceText.textContent = canAppend
-    ? `${name} already has an S1WP log. Append new rows, or override the file?`
-    : `${name} is not an S1WP log. Override it to start a new log, or cancel.`;
+    ? `${name} already has an ${label}. Append new rows, or override the file?`
+    : `${name} is not an ${label}. Override it to start a new log, or cancel.`;
   elements.fileAppend.hidden = !canAppend;
   return new Promise((resolve) => {
     let settled = false;

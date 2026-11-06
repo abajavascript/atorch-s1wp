@@ -1,0 +1,182 @@
+/* Tokens */
+:root {
+  color-scheme: dark;
+  font-family: system-ui, sans-serif;
+  --bg: #111827;
+  --panel: #1f2937;
+  --card: #374151;
+  --inset: #0f172a;
+  --border: #4b5563;
+  --text: #f3f4f6;
+  --text-soft: #cbd5e1;
+  --muted: #9ca3af;
+  --accent: #2563eb;
+  --ok: #86efac;
+  --warn: #fcd34d;
+  --danger: #fca5a5;
+  --radius: 12px;
+  --radius-small: 8px;
+  --gap: 12px;
+  --touch: 44px;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Base */
+* { box-sizing: border-box; }
+
+body {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px 16px 40px;
+}
+
+h1, h2 { font-weight: 650; line-height: 1.2; }
+h1 { font-size: 1.7rem; margin: 0 0 6px; }
+h2 { font-size: 1rem; margin: 16px 0 8px; }
+
+button, select, input {
+  font: inherit;
+  min-height: var(--touch);
+}
+
+button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.45; cursor: default; }
+button.secondary { background: var(--card); }
+
+select, input {
+  padding: 8px 10px;
+  border-radius: var(--radius-small);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: inherit;
+}
+
+summary { cursor: pointer; min-height: var(--touch); display: flex; align-items: center; }
+
+pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+  background: var(--bg);
+  padding: 12px;
+  border-radius: var(--radius-small);
+}
+
+/* Layout */
+.page-header { margin-bottom: 8px; }
+
+.panel {
+  background: var(--panel);
+  padding: 16px;
+  border-radius: var(--radius);
+  margin: 14px 0;
+}
+
+.actions, .chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Text */
+.muted, .note { color: var(--muted); }
+.note { font-size: 0.92rem; line-height: 1.45; }
+.error { color: var(--danger); overflow-wrap: anywhere; }
+#error:empty { display: none; }
+
+/* Toggle chips: add one color rule per data-series */
+.chips button { background: var(--card); }
+.chips button[aria-pressed="true"] { color: var(--bg); background: var(--text-soft); }
+
+/* Metric cards */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--gap);
+}
+
+.metric {
+  background: var(--card);
+  border-radius: 10px;
+  padding: 14px;
+  min-width: 0;
+}
+.metric .name { color: var(--text-soft); font-size: 0.85rem; }
+.metric .value {
+  font-size: 1.45rem;
+  font-variant-numeric: tabular-nums;
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+}
+.metric .detail {
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.15;
+  min-height: 1.15em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.metric.wide { grid-column: 1 / -1; }
+
+/* Link log */
+.link-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+.link-log li {
+  padding: 6px 0;
+  border-top: 1px solid var(--card);
+  overflow-wrap: anywhere;
+}
+.link-log li:first-child { border-top: 0; }
+.link-log time { color: var(--muted); font-variant-numeric: tabular-nums; margin-right: 6px; }
+.link-log .reconnecting { color: var(--warn); }
+.link-log .connected { color: var(--ok); }
+
+/* Dialogs */
+dialog {
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--panel);
+  color: inherit;
+  padding: 16px;
+  max-width: min(440px, calc(100vw - 32px));
+}
+dialog p { margin: 0; }
+dialog label { display: grid; gap: 6px; margin-top: 12px; }
+dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+dialog .actions { margin-top: 14px; }
+
+/* Chart container */
+.chart { width: 100%; margin-top: 12px; }
+.chart-empty {
+  margin: 0;
+  padding: 20px 12px;
+  min-height: 240px;
+  color: var(--muted);
+  background: var(--inset);
+  border-radius: var(--radius-small);
+}
+
+/* Wider screens */
+@media (min-width: 720px) {
+  .metrics { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .metric.wide { grid-column: auto; }
+  .metric .value { font-size: 1.6rem; }
+  .chart-empty { min-height: 320px; }
+}
