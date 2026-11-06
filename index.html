@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#111827">
 <title>Atorch S1WP</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.min.css">
 <link rel="stylesheet" href="css/app.css">
 </head>
 <body>
@@ -83,12 +84,14 @@
 <section class="panel" aria-label="Chart">
   <div class="chips" id="chips">
     <button type="button" data-series="power" aria-pressed="true">Power</button>
-    <button type="button" data-series="voltage" aria-pressed="false">Voltage</button>
-    <button type="button" data-series="current" aria-pressed="false">Current</button>
+    <button type="button" data-series="voltage" aria-pressed="true">Voltage</button>
+    <button type="button" data-series="current" aria-pressed="true">Current</button>
     <button type="button" data-series="powerFactor" aria-pressed="false">Power factor</button>
     <button type="button" data-series="temperature" aria-pressed="false">Temperature</button>
   </div>
-  <canvas id="chart" width="640" height="280" aria-label="Selected reading over time"></canvas>
+  <div id="chart" class="chart" aria-label="Selected readings over time">
+    <p class="chart-empty">Waiting for data</p>
+  </div>
 </section>
 
 <section class="panel" aria-label="Log file">

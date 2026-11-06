@@ -26,7 +26,7 @@ let packetCount = 0;
 let latest = null;
 let baselineAt = null;
 
-const chart = createChart(elements.chart);
+const chart = await createChart(elements.chart);
 const logger = createLogger({
   onFile: (name) => {
     elements.fileName.textContent = name;
@@ -287,10 +287,9 @@ elements.stopLog.addEventListener('click', () => guarded(async () => {
 
 for (const button of elements.chips.querySelectorAll('button')) {
   button.addEventListener('click', () => {
-    chart.setActive(button.dataset.series);
-    for (const chip of elements.chips.querySelectorAll('button')) {
-      chip.setAttribute('aria-pressed', chip === button ? 'true' : 'false');
-    }
+    const next = button.getAttribute('aria-pressed') !== 'true';
+    const shown = chart.setVisible(button.dataset.series, next);
+    button.setAttribute('aria-pressed', shown ? 'true' : 'false');
   });
 }
 

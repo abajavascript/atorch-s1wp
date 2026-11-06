@@ -1,3 +1,5 @@
+const UPLOT_URL = 'https://cdn.jsdelivr.net/npm/uplot@1.6.32/dist/uPlot.esm.js';
+
 const SERIES = {
   power: { label: 'Power', unit: 'W', color: '#fbbf24', digits: 1 },
   voltage: { label: 'Voltage', unit: 'V', color: '#60a5fa', digits: 1 },
@@ -7,151 +9,292 @@ const SERIES = {
 };
 
 const GAP_SECONDS = 3;
+const AXIS_FONT = '11px system-ui, sans-serif';
+const TICK_SPACE = 72;
 
-export function createChart(canvas) {
-  const history = Object.fromEntries(Object.keys(SERIES).map((key) => [key, []]));
-  let active = 'power';
+export async function createChart(container) {
+  let UPlot;
+  try {
+    UPlot = (await import(UPLOT_URL)).default;
+  } catch (error) {
+    console.warn(error);
+    showLibraryError(container);
+    return {
+      push() {},
+      clear() {},
+      setVisible() { return false; }
+    };
+  }
+
+  const empty = ensureEmpty(container);
+  const xs = [];
+  const columns = Object.fromEntries(Object.keys(SERIES).map((key) => [key, []]));
+  const visible = {
+    power: true,
+    voltage: true,
+    current: true,
+    powerFactor: false,
+    temperature: false
+  };
   let origin = null;
-  const context = canvas.getContext('2d');
-  const observer = new ResizeObserver(() => draw());
-  observer.observe(canvas);
+  let lastT = null;
+  let plot = null;
+  let plotKeys = [];
+  let frame = 0;
+  const wideQuery = window.matchMedia('(min-width: 720px)');
+
+  function visibleKeys() {
+    return Object.keys(SERIES).filter((key) => visible[key]);
+  }
+
+  function visibleCount() {
+    return visibleKeys().length;
+  }
+
+  function aligned(keys) {
+    return [xs, ...keys.map((key) => columns[key])];
+  }
+
+  function sameKeys(keys) {
+    return plotKeys.length === keys.length && plotKeys.every((key, index) => key === keys[index]);
+  }
+
+  function plotHeight() {
+    return wideQuery.matches ? 320 : 240;
+  }
+
+  function destroyPlot() {
+    if (!plot) return;
+    plot.destroy();
+    plot = null;
+    plotKeys = [];
+  }
+
+  function mount(keys) {
+    const width = Math.floor(container.clientWidth);
+    if (width < 2 || !keys.length || !xs.length) return false;
+    destroyPlot();
+    plotKeys = keys.slice();
+    plot = new UPlot(chartOptions(keys, width, plotHeight()), aligned(keys), container);
+    return true;
+  }
+
+  function paint() {
+    if (!xs.length) {
+      empty.hidden = false;
+      destroyPlot();
+      return;
+    }
+    const keys = visibleKeys();
+    if (!plot || !sameKeys(keys)) {
+      empty.hidden = mount(keys);
+      return;
+    }
+    plot.setData(aligned(keys));
+    empty.hidden = true;
+  }
+
+  function scheduleDraw() {
+    if (frame) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      paint();
+    });
+  }
 
   function push(sample, timeMs) {
-    if (origin == null) origin = timeMs;
-    const t = (timeMs - origin) / 1000;
-    for (const key of Object.keys(SERIES)) {
-      const points = history[key];
-      const previous = points[points.length - 1];
-      const gap = Boolean(previous) && t - previous.t > GAP_SECONDS;
-      points.push({ t, y: sample[key], gap });
+    let t = timeMs / 1000;
+    if (lastT != null && t <= lastT) t = lastT + 0.001;
+    if (origin == null) origin = t;
+    if (lastT != null && t - lastT > GAP_SECONDS) {
+      xs.push(lastT + 0.001);
+      for (const key of Object.keys(SERIES)) columns[key].push(null);
     }
-    draw();
+    xs.push(t);
+    for (const key of Object.keys(SERIES)) columns[key].push(sample[key]);
+    lastT = t;
+    scheduleDraw();
   }
 
   function clear() {
-    for (const key of Object.keys(history)) history[key].length = 0;
+    xs.length = 0;
+    for (const key of Object.keys(columns)) columns[key].length = 0;
     origin = null;
-    draw();
-  }
-
-  function setActive(key) {
-    if (!SERIES[key]) return;
-    active = key;
-    draw();
-  }
-
-  function draw() {
-    const ratio = window.devicePixelRatio || 1;
-    const bounds = canvas.getBoundingClientRect();
-    const width = Math.max(1, Math.round(bounds.width * ratio));
-    const height = Math.max(1, Math.round(bounds.height * ratio));
-    if (canvas.width !== width || canvas.height !== height) {
-      canvas.width = width;
-      canvas.height = height;
+    lastT = null;
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = 0;
     }
+    destroyPlot();
+    empty.hidden = false;
+  }
 
-    context.setTransform(1, 0, 0, 1, 0, 0);
-    context.clearRect(0, 0, width, height);
-    context.fillStyle = '#0f172a';
-    context.fillRect(0, 0, width, height);
+  function setVisible(key, on) {
+    if (!SERIES[key]) return false;
+    const next = Boolean(on);
+    if (visible[key] === next) return next;
+    if (!next && visibleCount() <= 1) return true;
+    visible[key] = next;
+    if (frame) {
+      cancelAnimationFrame(frame);
+      frame = 0;
+    }
+    if (xs.length) paint();
+    return next;
+  }
 
-    const pad = { left: 68 * ratio, right: 16 * ratio, top: 28 * ratio, bottom: 32 * ratio };
-    const plotWidth = width - pad.left - pad.right;
-    const plotHeight = height - pad.top - pad.bottom;
-    const points = history[active];
-    const meta = SERIES[active];
-    const title = meta.unit ? `${meta.label} (${meta.unit})` : meta.label;
-
-    context.fillStyle = '#e5e7eb';
-    context.font = `${13 * ratio}px system-ui, sans-serif`;
-    context.fillText(title, pad.left, 18 * ratio);
-
-    if (!points.length || plotWidth <= 0 || plotHeight <= 0) {
-      context.fillStyle = '#9ca3af';
-      context.font = `${13 * ratio}px system-ui, sans-serif`;
-      context.fillText('Waiting for data', pad.left, pad.top + 20 * ratio);
+  const observer = new ResizeObserver(() => {
+    if (!xs.length) return;
+    const width = Math.floor(container.clientWidth);
+    const height = plotHeight();
+    if (!plot) {
+      empty.hidden = mount(visibleKeys());
       return;
     }
-
-    let minY = Infinity;
-    let maxY = -Infinity;
-    let maxT = 0;
-    for (const point of points) {
-      minY = Math.min(minY, point.y);
-      maxY = Math.max(maxY, point.y);
-      maxT = Math.max(maxT, point.t);
+    if (width >= 2 && (plot.width !== width || plot.height !== height)) {
+      plot.setSize({ width, height });
     }
-    if (minY === maxY) {
-      const cushion = Math.abs(minY) * 0.05 || 1;
-      minY -= cushion;
-      maxY += cushion;
-    } else {
-      const span = maxY - minY;
-      minY -= span * 0.08;
-      maxY += span * 0.08;
-    }
-    if (maxT <= 0) maxT = 1;
+  });
+  observer.observe(container);
+  wideQuery.addEventListener('change', () => {
+    if (!plot) return;
+    plot.setSize({ width: Math.floor(container.clientWidth), height: plotHeight() });
+  });
 
-    context.strokeStyle = '#1f2937';
-    context.lineWidth = ratio;
-    context.fillStyle = '#9ca3af';
-    context.font = `${11 * ratio}px system-ui, sans-serif`;
-    context.textBaseline = 'middle';
-    for (let step = 0; step <= 4; step += 1) {
-      const y = pad.top + (plotHeight * step) / 4;
-      const value = maxY - ((maxY - minY) * step) / 4;
-      context.beginPath();
-      context.moveTo(pad.left, y);
-      context.lineTo(width - pad.right, y);
-      context.stroke();
-      context.fillText(value.toFixed(meta.digits), 8 * ratio, y);
-    }
+  return { push, clear, setVisible };
 
-    const drawn = downsample(points, Math.max(2, Math.floor(plotWidth / ratio)));
-    context.beginPath();
-    context.strokeStyle = meta.color;
-    context.lineWidth = 2 * ratio;
-    context.lineJoin = 'round';
-    context.lineCap = 'round';
-    drawn.forEach((point, index) => {
-      const x = pad.left + (point.t / maxT) * plotWidth;
-      const y = pad.top + ((maxY - point.y) / (maxY - minY)) * plotHeight;
-      const next = drawn[index + 1];
-      const isolated = (index === 0 || point.gap) && (!next || next.gap);
-      if (index === 0 || point.gap) context.moveTo(x, y);
-      else context.lineTo(x, y);
-      if (isolated) context.lineTo(x + 0.01, y);
-    });
-    context.stroke();
-
-    context.textBaseline = 'alphabetic';
-    context.fillStyle = '#9ca3af';
-    context.font = `${11 * ratio}px system-ui, sans-serif`;
-    context.fillText('0:00', pad.left, height - 10 * ratio);
-    const elapsed = formatElapsed(maxT);
-    const elapsedWidth = context.measureText(elapsed).width;
-    context.fillText(elapsed, width - pad.right - elapsedWidth, height - 10 * ratio);
+  function chartOptions(keys, width, height) {
+    return {
+      width,
+      height,
+      scales: scalesFor(keys),
+      axes: axesFor(keys),
+      series: seriesFor(keys),
+      cursor: {
+        y: false,
+        drag: { x: false, y: false, setScale: false }
+      },
+      legend: { show: true, live: true }
+    };
   }
 
-  draw();
-  return { push, clear, setActive, redraw: draw };
+  function scalesFor(keys) {
+    const scales = { x: { time: true } };
+    for (const key of keys) scales[key] = { auto: true, range: paddedRange };
+    return scales;
+  }
+
+  function axesFor(keys) {
+    const axes = [
+      xAxis(2, clockValues),
+      xAxis(0, elapsedValues)
+    ];
+    keys.forEach((key, index) => {
+      const meta = SERIES[key];
+      axes.push({
+        scale: key,
+        side: index % 2 === 0 ? 3 : 1,
+        stroke: meta.color,
+        font: AXIS_FONT,
+        size: measureAxis,
+        ticks: { stroke: meta.color, width: 1, size: 4 },
+        grid: index === 0 ? { stroke: '#1f2937', width: 1 } : { show: false },
+        values: tickValues(meta.digits)
+      });
+    });
+    return axes;
+  }
+
+  function seriesFor(keys) {
+    return [
+      {
+        label: 'Time',
+        value: (u, value) => {
+          if (value == null || origin == null) return '—';
+          return `${formatElapsed(value - origin)} · ${formatClock(value)}`;
+        }
+      },
+      ...keys.map((key) => {
+        const meta = SERIES[key];
+        return {
+          label: meta.label,
+          scale: key,
+          stroke: meta.color,
+          width: 2,
+          points: { size: 7, width: 2 },
+          value: (u, value) => value == null ? '—' : formatReading(value, meta)
+        };
+      })
+    ];
+  }
+
+  function clockValues(u, splits) {
+    return splits.map((value) => value == null ? '' : formatClock(value));
+  }
+
+  function elapsedValues(u, splits) {
+    return splits.map((value) => {
+      if (value == null || origin == null) return '';
+      return formatElapsed(value - origin);
+    });
+  }
 }
 
-function downsample(points, buckets) {
-  if (points.length <= buckets) return points;
-  const sampled = [];
-  const size = points.length / buckets;
-  for (let index = 0; index < buckets; index += 1) {
-    const start = Math.floor(index * size);
-    const end = Math.min(points.length, Math.floor((index + 1) * size));
-    if (end <= start) continue;
-    let gapAt = -1;
-    for (let at = start; at < end; at += 1) if (points[at].gap) gapAt = at;
-    if (gapAt > start) sampled.push(points[gapAt - 1]);
-    if (gapAt >= start) sampled.push(points[gapAt]);
-    if (end - 1 > gapAt) sampled.push(points[end - 1]);
+function xAxis(side, values) {
+  return {
+    scale: 'x',
+    side,
+    space: TICK_SPACE,
+    stroke: '#9ca3af',
+    font: AXIS_FONT,
+    size: 28,
+    ticks: { stroke: '#4b5563', width: 1, size: 4 },
+    grid: side === 2 ? { stroke: '#1f2937', width: 1 } : { show: false },
+    values
+  };
+}
+
+function tickValues(digits) {
+  return (u, splits) => splits.map((value) => value == null ? '' : Number(value).toFixed(digits));
+}
+
+function measureAxis(u, values, axisIdx) {
+  if (!values || !values.length) return 58;
+  const axis = u.axes[axisIdx];
+  if (!axis || axis.side === 0 || axis.side === 2) return 28;
+  const context = u.ctx;
+  if (!context) return 58;
+  const fontSize = Array.isArray(axis.font) ? axis.font[2] : 11;
+  context.save();
+  context.font = `${fontSize}px system-ui, sans-serif`;
+  let longest = 0;
+  for (const value of values) {
+    if (value == null || value === '') continue;
+    longest = Math.max(longest, context.measureText(String(value)).width);
   }
-  return sampled;
+  context.restore();
+  return Math.max(40, Math.ceil(longest + 16));
+}
+
+function paddedRange(u, min, max) {
+  if (min == null || max == null) return [0, 1];
+  if (min === max) {
+    const cushion = Math.abs(min) * 0.05 || 1;
+    return [min - cushion, max + cushion];
+  }
+  const span = max - min;
+  return [min - span * 0.08, max + span * 0.08];
+}
+
+function formatReading(value, meta) {
+  const text = Number(value).toFixed(meta.digits);
+  return meta.unit ? `${text} ${meta.unit}` : text;
+}
+
+function formatClock(seconds) {
+  const date = new Date(seconds * 1000);
+  const pad = (value) => String(value).padStart(2, '0');
+  return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 function formatElapsed(seconds) {
@@ -162,4 +305,23 @@ function formatElapsed(seconds) {
   const pad = (value) => String(value).padStart(2, '0');
   if (hours > 0) return `${hours}:${pad(minutes)}:${pad(secs)}`;
   return `${minutes}:${pad(secs)}`;
+}
+
+function ensureEmpty(container) {
+  let empty = container.querySelector('.chart-empty');
+  if (!empty) {
+    empty = document.createElement('p');
+    empty.className = 'chart-empty';
+    empty.textContent = 'Waiting for data';
+    container.prepend(empty);
+  }
+  return empty;
+}
+
+function showLibraryError(container) {
+  container.replaceChildren();
+  const note = document.createElement('p');
+  note.className = 'chart-empty';
+  note.textContent = 'Chart library failed to load.';
+  container.append(note);
 }
