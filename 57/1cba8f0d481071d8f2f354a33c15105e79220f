@@ -1,0 +1,70 @@
+.cursor/skills/browser-file-logging/logger.js
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-235
+  s_f5bf96ce85e5a0::t_011d0b928495f9 236-254
+.cursor/skills/browser-file-logging/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-14,23-26,28-32,34,41-42,44-51,54-85
+  s_f5bf96ce85e5a0::t_97542157f17fc8 17,19-20
+  s_f5bf96ce85e5a0::t_64f8f69572d799 27
+  s_f5bf96ce85e5a0::t_3a2745d5b71a7b 33,35-40,43,52-53
+  s_f5bf96ce85e5a0::t_782fad83df72e3 15-16,18,21-22
+.cursor/skills/web-bluetooth-device/ble.js
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-303
+README.md
+  s_f5bf96ce85e5a0::t_6cbae728e178dd 3
+  s_f5bf96ce85e5a0::t_c9ed375398d487 23
+doc/adr.md
+  s_f5bf96ce85e5a0::t_975a0f96e4ecc9 25
+js/log.js
+  s_f5bf96ce85e5a0::t_3e48e1de7e3991 116
+  s_f5bf96ce85e5a0::t_4c7beaf7dc272e 246
+  s_f5bf96ce85e5a0::t_eec5e928b1c835 260-274,276,280,296-314
+  s_f5bf96ce85e5a0::t_0a0b29d3e47ca3 164
+  s_f5bf96ce85e5a0::t_6f28a6342d5b69 279
+  s_f5bf96ce85e5a0::t_71ebfcf95d00e3 126,134
+  s_f5bf96ce85e5a0::t_4e7edda35abb71 316,326
+  s_f5bf96ce85e5a0::t_7d855d9200254a 171
+  s_f5bf96ce85e5a0::t_4b08d9738e08a3 187
+  s_f5bf96ce85e5a0::t_58d4e728e2635a 90-91,94-98
+  s_f5bf96ce85e5a0::t_5e5eef7b9df7e9 17-40,44
+  s_f5bf96ce85e5a0::t_f74a698638f810 315
+.gitignore
+  s_f5bf96ce85e5a0::t_41e12e5514cb5b 5-6
+index.html
+  s_f5bf96ce85e5a0::t_2002be648c13cf 116
+js/app.js
+  s_f5bf96ce85e5a0::t_2956fba0ba98c3 210,212-213
+.cursor/skills/github-pages-app/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-121
+.cursor/skills/firebase-auth-pages/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-83
+.cursor/skills/web-ui-layout/base.css
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-182
+.cursor/skills/browser-dialogs/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-82
+doc/prd.md
+  s_f5bf96ce85e5a0::t_fcc6093e783f0a 19
+  s_f5bf96ce85e5a0::t_a4592e928222d3 43,45-47,51
+  s_f5bf96ce85e5a0::t_acbe94289add21 35
+.cursor/skills/web-ui-layout/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-98
+.cursor/skills/web-bluetooth-device/devices.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-46
+.cursor/skills/web-bluetooth-device/SKILL.md
+  s_f5bf96ce85e5a0::t_8cc19b0c50cf1c 1-76
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "571cba8f0d481071d8f2f354a33c15105e79220f",
+  "prompts": {},
+  "sessions": {
+    "s_f5bf96ce85e5a0": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "6d8bb2f9-4c07-4e55-a204-77a3970fc1cb",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
