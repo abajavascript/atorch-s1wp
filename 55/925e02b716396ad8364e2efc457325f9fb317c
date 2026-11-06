@@ -1,0 +1,32 @@
+doc/prd.md
+  s_0e5fe6fef9eca8::t_63fe05faf61a12 1-2,4-49
+  s_0e5fe6fef9eca8::t_8d7d606a40037e 3
+doc/adr.md
+  s_0e5fe6fef9eca8::t_c2a494ab33c17a 1-35
+README.md
+  s_8ac9310d72182d::t_9e9d040430e70d 7
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "55925e02b716396ad8364e2efc457325f9fb317c",
+  "prompts": {},
+  "sessions": {
+    "s_0e5fe6fef9eca8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "5b11db60-dcfa-4f8b-b7ff-c91e1c55340f",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    },
+    "s_8ac9310d72182d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cd6c064c-f4b7-459a-8cca-5d6801f27932",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
