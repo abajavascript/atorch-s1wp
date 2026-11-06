@@ -18,6 +18,6 @@ Then open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). On Android, turn Loc
 
 ## Capacity test
 
-Connect to `S1WP_BLE`. After the battery is full, press **Zero accumulated**. Device energy stays the meter’s running total. Baseline is that total at the moment you zero. Accumulated is device energy minus the baseline, shown in kWh and Wh. The chart shows power (switch it to voltage, current, power factor, or temperature). Energy is not plotted.
+Connect to `S1WP_BLE`. After the battery is full, press **Zero accumulated**. Device energy stays the meter’s running total. Baseline is that total at the moment you zero. Accumulated is device energy minus the baseline, shown in kWh and Wh. The chart shows power, voltage, and current together, each on its own scale. Power factor and temperature can be turned on beside them. Hover a point to read its value, the elapsed time, and the clock time. Energy is not plotted.
 
 Press **Start logging**. **New file** creates a log when you enter a name. **Existing file** keeps the current contents: an empty file starts a new log, and a file that already holds an S1WP log can be appended to or overridden. Store every reading, or one averaged row every 5 seconds, 10 seconds, 30 seconds, 1 minute, 5 minutes, or 10 minutes. The file is tab-separated, with one header line. Timestamps look like `2026-11-05 19:30:43 +02:00`. Closing the page saves the last finished row and disconnects. If the Bluetooth link drops, the page reconnects and keeps appending to the same file.

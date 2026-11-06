@@ -67,10 +67,12 @@ button:disabled { opacity: 0.45; cursor: default; }
 button.secondary { background: #374151; }
 
 .chips button { background: #374151; }
-.chips button[aria-pressed="true"] {
-  background: #fbbf24;
-  color: #111827;
-}
+.chips button[aria-pressed="true"] { color: #111827; }
+.chips button[data-series="power"][aria-pressed="true"] { background: #fbbf24; }
+.chips button[data-series="voltage"][aria-pressed="true"] { background: #60a5fa; }
+.chips button[data-series="current"][aria-pressed="true"] { background: #34d399; }
+.chips button[data-series="powerFactor"][aria-pressed="true"] { background: #c084fc; }
+.chips button[data-series="temperature"][aria-pressed="true"] { background: #f87171; }
 
 select, input {
   margin-left: 6px;
@@ -161,13 +163,32 @@ pre {
   border-radius: 8px;
 }
 
-canvas {
+.chart {
   width: 100%;
-  height: 240px;
-  display: block;
   margin-top: 12px;
+}
+.chart-empty {
+  margin: 0;
+  padding: 20px 12px;
+  min-height: 240px;
+  color: #9ca3af;
+  background: #0f172a;
   border-radius: 8px;
 }
+.chart .uplot { width: 100%; }
+.chart .u-wrap {
+  background: #0f172a;
+  border-radius: 8px;
+}
+.chart .u-legend {
+  margin-top: 8px;
+  text-align: left;
+  color: #e5e7eb;
+  font-size: 12px;
+  pointer-events: none;
+}
+.chart .u-legend .u-value { font-variant-numeric: tabular-nums; }
+.chart .u-hz .u-cursor-x { border-right-color: #e5e7eb; }
 
 summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
 
@@ -175,5 +196,5 @@ summary { cursor: pointer; min-height: 44px; display: flex; align-items: center;
   .metrics { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
   .metric.wide { grid-column: auto; }
   .metric .value { font-size: 1.6rem; }
-  canvas { height: 320px; }
+  .chart-empty { min-height: 320px; }
 }
