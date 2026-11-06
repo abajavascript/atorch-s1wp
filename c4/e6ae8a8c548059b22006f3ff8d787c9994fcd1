@@ -1,0 +1,21 @@
+favicon.svg
+  s_0e5fe6fef9eca8::t_475905ccf63ce5 1-11
+index.html
+  s_0e5fe6fef9eca8::t_bad1c58b107243 8-9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c4e6ae8a8c548059b22006f3ff8d787c9994fcd1",
+  "prompts": {},
+  "sessions": {
+    "s_0e5fe6fef9eca8": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "5b11db60-dcfa-4f8b-b7ff-c91e1c55340f",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
