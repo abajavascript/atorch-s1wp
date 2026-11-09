@@ -1,0 +1,49 @@
+README.md
+  s_e2780e20754c7f::t_ec7e193b42695c 21
+  s_e2780e20754c7f::t_fc070f53489460 23
+  s_8ac9310d72182d::t_8ea5efd4db4768 1,3
+js/protocol.js
+  s_e2780e20754c7f::t_ef4fd623b482b1 3-4
+js/log.js
+  s_e2780e20754c7f::t_a406d2c4705cf2 96-97
+js/ble.js
+  s_e2780e20754c7f::t_b95ed2492859ce 41
+js/app.js
+  s_e2780e20754c7f::t_f71d98c85a9b85 210
+doc/prd.md
+  s_e2780e20754c7f::t_9df61c486a2b04 13
+  s_e2780e20754c7f::t_7a7f5c37394869 3
+index.html
+  s_8ac9310d72182d::t_056e3ce8a5400f 7,15
+doc/adr.md
+  s_e2780e20754c7f::t_344566c8c7ffa8 11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c75ae796467038f37239362d8c2589d1db13f1e7",
+  "prompts": {},
+  "humans": {
+    "h_17b8d96e79ff1e": {
+      "author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_8ac9310d72182d": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "cd6c064c-f4b7-459a-8cca-5d6801f27932",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    },
+    "s_e2780e20754c7f": {
+      "agent_id": {
+        "tool": "cursor",
+        "id": "4bbcf1a0-5a5f-4516-b113-531e3f7ca289",
+        "model": "auto-smart"
+      },
+      "human_author": "ABA JavaScript <abajavascript@gmail.com>"
+    }
+  }
+}
