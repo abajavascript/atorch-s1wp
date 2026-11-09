@@ -8,7 +8,7 @@ The discharge runs for hours next to the meter. A server would add accounts, hos
 
 ## 2. Web Bluetooth notifications
 
-The meter advertises as `S1WP_BLE` and notifies on service `0xFFE0`, characteristic `0xFFE1`. The page subscribes and decodes each notification. It does not write settings.
+Atorch Energy Monitor (S1WP, GR2PWS) meters advertise as `S1WP_BLE` or `GR2PWS_BLE` and notify on service `0xFFE0`, characteristic `0xFFE1`. The chooser is built from `DEVICE_NAME` in `js/protocol.js`; a similar model is another name in that list. The page subscribes and decodes each notification. It does not write settings.
 
 Chrome and Edge on a computer, and Chrome on Android, implement this API. iPhone and iPad do not, so they are out of scope. On Android the Bluetooth chooser can stay empty unless Location is on. The tab should stay in the foreground; a screen wake lock is requested while the link is up and the page is visible.
 

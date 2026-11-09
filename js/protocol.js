@@ -1,6 +1,7 @@
 export const SERVICE_UUID = 0xffe0;
 export const NOTIFY_UUID = 0xffe1;
-export const DEVICE_NAME = 'S1WP_BLE';
+// Advertised Bluetooth names. Append a name to offer another similar model in the chooser.
+export const DEVICE_NAME = ['S1WP_BLE', 'GR2PWS_BLE'];
 
 export const SAMPLE_HEX = 'ff 55 01 01 00 08 4a 00 00 ce 00 00 90 00 00 11 1d 00 00 64 01 f4 01 49 00 20 01 4c 26 05 3c 00 00 00 00 7e';
 

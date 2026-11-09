@@ -1,6 +1,6 @@
 # Product brief
 
-This page watches one Atorch S1WP energy meter and records energy consumption. Initial purpose was to test hybrid-inverter battery capacity by discharge with specific load. Charge the battery full, zero the accumulated energy, then watch and log the output until the battery is empty.
+This page watches one Atorch Energy Monitor (S1WP, GR2PWS) and records energy consumption. Initial purpose was to test hybrid-inverter battery capacity by discharge with specific load. Charge the battery full, zero the accumulated energy, then watch and log the output until the battery is empty.
 
 How to open the page and run a test is in the [README](../README.md). Why the page is built this way is in [adr.md](adr.md).
 
@@ -10,7 +10,7 @@ One person, at the meter, with Chrome or Edge on a computer, or Chrome on Androi
 
 ## In scope
 
-- Connect to the meter named `S1WP_BLE` and show live readings.
+- Connect to a meter named `S1WP_BLE` or `GR2PWS_BLE` and show live readings. Add a similar model by appending its advertised name to `DEVICE_NAME` in `js/protocol.js`.
 - Reconnect when the Bluetooth link drops, and say so in the link log.
 - Show device energy, a baseline, and accumulated energy since that baseline.
 - Show when the baseline was set, how long the accumulation has been running, and the current time next to device energy.

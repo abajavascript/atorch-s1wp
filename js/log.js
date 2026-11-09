@@ -93,8 +93,8 @@ export function createLogger({ onFile, onRows, onError }) {
         if (action === 'append') {
           if (!canAppend) {
             throw new Error(nextFormat === 'jsonl'
-              ? 'That file does not start with the S1WP JSONL header.'
-              : 'That file does not start with the S1WP log header.');
+              ? 'That file does not start with the Energy Monitor JSONL header.'
+              : 'That file does not start with the Energy Monitor log header.');
           }
           await adopt(next, { leadingNewline: !text.endsWith('\n') });
         } else if (action === 'override') {

@@ -38,7 +38,7 @@ export function createBle({ onPacket, onLink }) {
     let selected;
     try {
       selected = await navigator.bluetooth.requestDevice({
-        filters: [{ name: DEVICE_NAME }],
+        filters: (Array.isArray(DEVICE_NAME) ? DEVICE_NAME : [DEVICE_NAME]).map((name) => ({ name })),
         optionalServices: [SERVICE_UUID]
       });
     } catch (error) {
